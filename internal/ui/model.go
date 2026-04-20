@@ -39,6 +39,7 @@ type Model struct {
 	rankCursor     int
 	confirmCursor  int
 	confirmNotice  string
+	notice         string
 	err            error
 	message        string
 }
@@ -150,6 +151,7 @@ func (m *Model) enterSelectedPoll() {
 	m.ranking = make([]string, len(m.selected.Books))
 	m.respondentName = ""
 	m.confirmNotice = ""
+	m.notice = ""
 	m.currentRank = 0
 	m.rankCursor = 0
 	m.confirmCursor = 0
@@ -220,6 +222,16 @@ func (m Model) updateRank(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	}
 
 	switch msg.String() {
+	case "ctrl+g":
+		if book, ok := m.currentHighlightedBook(); ok {
+			m.notice = "Copied Goodreads URL to clipboard."
+			return m, tea.SetClipboard(book.GoodreadsURL)
+		}
+	case "ctrl+y":
+		if book, ok := m.currentHighlightedBook(); ok {
+			m.notice = "Copied Moly URL to clipboard."
+			return m, tea.SetClipboard(book.MolyURL)
+		}
 	case "up", "k":
 		m.rankCursor--
 		if m.rankCursor < 0 {
@@ -248,6 +260,7 @@ func (m Model) updateRank(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		m.ranking[m.currentRank] = options[m.rankCursor].ID
+		m.notice = ""
 		m.currentRank++
 		m.rankCursor = 0
 		if m.currentRank >= len(m.selected.Books) {
@@ -414,12 +427,16 @@ func (m Model) rankView() string {
 		b.WriteString(renderFieldNotice(m.confirmNotice))
 		b.WriteString("\n\n")
 	}
+	if strings.TrimSpace(m.notice) != "" {
+		b.WriteString(renderFieldNotice(m.notice))
+		b.WriteString("\n\n")
+	}
 	if m.currentRank > 0 {
 		b.WriteString(renderFieldDescription("Current ranking:\n" + m.partialRankingSummary()))
 		b.WriteString("\n\n")
 	}
 	for i, book := range m.rankOptions() {
-		b.WriteString(renderFieldOption(i == m.rankCursor, fmt.Sprintf("%s by %s", book.Title, book.Author)))
+		b.WriteString(renderFieldOption(i == m.rankCursor, renderBookOptionLabel(book)))
 		b.WriteString("\n")
 	}
 	if m.currentRank > 0 {
@@ -427,7 +444,7 @@ func (m Model) rankView() string {
 		b.WriteString("\n")
 	}
 	b.WriteString("\n")
-	b.WriteString(renderFieldHelp("Use up/down, j/k, Enter to select. Left/h goes back one rank."))
+	b.WriteString(renderFieldHelp("Use up/down, j/k, Enter to select. Left/h goes back one rank. Ctrl+g copies Goodreads, Ctrl+y copies Moly."))
 	return renderFocusedField(strings.TrimSpace(b.String()))
 }
 
@@ -494,6 +511,30 @@ func renderFieldOption(selected bool, text string) string {
 
 func renderFieldHelp(text string) string {
 	return lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(text)
+}
+
+func (m Model) currentHighlightedBook() (config.Book, bool) {
+	options := m.rankOptions()
+	if m.rankCursor < 0 || m.rankCursor >= len(options) {
+		return config.Book{}, false
+	}
+	return options[m.rankCursor], true
+}
+
+func renderBookOptionLabel(book config.Book) string {
+	metaStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("252"))
+	separatorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("243"))
+	linkStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#7571F9")).Underline(true)
+
+	goodreads := linkStyle.Hyperlink(book.GoodreadsURL).Render("Goodreads")
+	moly := linkStyle.Hyperlink(book.MolyURL).Render("Moly")
+
+	return metaStyle.Render(fmt.Sprintf("%s by %s", book.Title, book.Author)) +
+		separatorStyle.Render("  [") +
+		goodreads +
+		separatorStyle.Render(" | ") +
+		moly +
+		separatorStyle.Render("]")
 }
 
 func renderFieldPlaceholder(text string) string {
