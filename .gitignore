@@ -1,0 +1,21 @@
+# Binaries
+/book-club-vote
+/dist/
+
+# Go test artifacts
+*.test
+*.out
+coverage.out
+
+# Local SSH host keys
+/data/ssh_host_ed25519_key
+/data/ssh_host_ed25519_key.pub
+
+# Local poll results
+/data/results/*.yaml
+!/data/results/.gitkeep
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/

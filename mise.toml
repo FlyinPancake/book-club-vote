@@ -1,0 +1,13 @@
+[tools]
+go = "latest"
+
+[tasks.run]
+run = "go run cmd/book-club-vote/main.go"
+sources = ["**/*.go"]
+outputs = ["book-club-vote"]
+alias = "r"
+
+[tasks.test]
+run = "go test -v ./..."
+sources = ["**/*.go"]
+alias = "t"

@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=schema/config.schema.json
+server:
+  listen: ":23234"
+  host_key_path: "./data/ssh_host_ed25519_key"
+  accessible: false
+
+polls:
+  - id: "may-2026"
+    name: "May 2026 Book"
+    description: "Vote for next month's read"
+    start: "2026-04-20T00:00:00Z"
+    end: "2026-04-27T23:59:59Z"
+    record_respondent_name: true
+    results_path: "./data/results/may-2026.yaml"
+    books:
+      - id: "kindred"
+        author: "Octavia E. Butler"
+        title: "Kindred"
+        goodreads_url: "https://www.goodreads.com/book/show/60931.Kindred"
+        moly_url: "https://moly.hu/konyvek/octavia-e-butler-kindred"
+      - id: "left-hand-of-darkness"
+        author: "Ursula K. Le Guin"
+        title: "The Left Hand of Darkness"
+        goodreads_url: "https://www.goodreads.com/book/show/18423.The_Left_Hand_of_Darkness"
+        moly_url: "https://moly.hu/konyvek/ursula-k-le-guin-the-left-hand-of-darkness"
+
+  - id: "june-2026"
+    name: "June 2026 Book"
+    description: "A second poll can run at the same time"
+    start: "2026-04-20T00:00:00Z"
+    end: "2026-04-28T23:59:59Z"
+    record_respondent_name: false
+    results_path: "./data/results/june-2026.yaml"
+    books:
+      - id: "piranesi"
+        author: "Susanna Clarke"
+        title: "Piranesi"
+        goodreads_url: "https://www.goodreads.com/book/show/50202953-piranesi"
+        moly_url: "https://moly.hu/konyvek/susanna-clarke-piranesi"
+      - id: "the-dispossessed"
+        author: "Ursula K. Le Guin"
+        title: "The Dispossessed"
+        goodreads_url: "https://www.goodreads.com/book/show/13651.The_Dispossessed"
+        moly_url: "https://moly.hu/konyvek/ursula-k-le-guin-the-dispossessed"
