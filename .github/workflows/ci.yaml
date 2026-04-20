@@ -22,6 +22,9 @@ jobs:
         run: ${{ matrix.cmd }}
   docker:
     needs: go
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/build-container.yaml
     with:
       push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
