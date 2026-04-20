@@ -1,0 +1,8 @@
+services:
+  book-club-vote:
+    build: .
+    ports:
+      - 10000:23234
+    volumes:
+      - ./data:/app/data
+      - ./config.example.yaml:/app/config.yaml

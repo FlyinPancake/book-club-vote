@@ -1,0 +1,27 @@
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Build
+            cmd: go build -v ./...
+          - name: Test
+            cmd: go test -v ./...
+    steps:
+      - uses: actions/checkout@v6
+      - uses: jdx/mise-action@v4
+      - run: go mod tidy
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.cmd }}
+  docker:
+    needs: go
+    uses: ./.github/workflows/build-container.yaml
+    with:
+      push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

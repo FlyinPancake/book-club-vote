@@ -566,9 +566,7 @@ func isPrintableText(s string) bool {
 
 func (m Model) successMessage() string {
 	var b strings.Builder
-	b.WriteString("Your ballot was written to ")
-	b.WriteString(m.selected.ResultsPath)
-	b.WriteString(".\n\nRecorded ranking:\n")
+	b.WriteString("Your ballot was saved!\n\n")
 	for i, bookID := range m.ranking {
 		b.WriteString(fmt.Sprintf("%d. %s\n", i+1, m.selected.BookLabel(bookID)))
 	}
